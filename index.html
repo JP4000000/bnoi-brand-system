@@ -91,7 +91,7 @@ img,svg{max-width:100%}
 .herobuild{position:relative;width:min(560px,84vw);margin:46px auto 0}
 .herobuild .backlight{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:118%;height:122%;border-radius:50%;
   background:radial-gradient(circle,rgba(74,144,255,.62),rgba(45,98,170,.22) 46%,transparent 70%);filter:blur(16px)}
-.herobuild .bsvg{position:relative;display:block;width:100%;height:auto;filter:drop-shadow(0 10px 44px rgba(74,144,255,.30))}
+.herobuild .bimg{position:relative;display:block;width:100%;height:auto;filter:drop-shadow(0 14px 50px rgba(74,144,255,.34))}
 .hero .toprow{position:absolute;top:clamp(64px,8svh,92px);left:clamp(20px,4vw,40px);right:clamp(20px,4vw,40px);max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;
   font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55);z-index:3}
 .scrollcue{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:3;color:rgba(255,255,255,.6);animation:bob 2.2s var(--ease) infinite}
@@ -284,43 +284,8 @@ footer a{color:rgba(255,255,255,.7);font-size:14px;margin-right:22px}footer a:ho
     </div>
     <div class="herobuild">
       <div class="backlight"></div>
-      <svg class="bsvg" viewBox="0 0 600 482" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#cdeef5" stop-opacity=".24"/><stop offset="1" stop-color="#2d62aa" stop-opacity=".05"/>
-          </linearGradient>
-          <pattern id="win" width="26" height="30" patternUnits="userSpaceOnUse">
-            <rect x="5" y="6" width="16" height="18" rx="2" fill="#cfe6ff" fill-opacity=".10" stroke="#ffffff" stroke-opacity=".16"/>
-          </pattern>
-        </defs>
-        <line x1="118" y1="474" x2="500" y2="474" stroke="#ffffff" stroke-opacity=".34" stroke-width="1.5"/>
-        <g>
-          <rect x="150" y="208" width="104" height="266" rx="5" fill="url(#glass)" stroke="#ffffff" stroke-opacity=".5" stroke-width="1.4"/>
-          <rect x="150" y="208" width="104" height="266" rx="5" fill="url(#win)"/>
-        </g>
-        <g>
-          <rect x="382" y="250" width="92" height="224" rx="5" fill="url(#glass)" stroke="#ffffff" stroke-opacity=".5" stroke-width="1.4"/>
-          <rect x="382" y="250" width="92" height="224" rx="5" fill="url(#win)"/>
-        </g>
-        <g>
-          <rect x="248" y="96" width="140" height="378" rx="6" fill="url(#glass)" stroke="#ffffff" stroke-opacity=".64" stroke-width="1.6"/>
-          <rect x="248" y="96" width="140" height="378" rx="6" fill="url(#win)"/>
-          <rect x="284" y="66" width="68" height="32" rx="3" fill="url(#glass)" stroke="#ffffff" stroke-opacity=".55" stroke-width="1.3"/>
-          <line x1="318" y1="66" x2="318" y2="34" stroke="#9fd3dc" stroke-opacity=".7" stroke-width="2"/>
-          <circle cx="318" cy="31" r="3" fill="#E5EDB0"/>
-        </g>
-        <g fill="#E5EDB0" fill-opacity=".88">
-          <rect x="265" y="126" width="16" height="18" rx="2"/><rect x="317" y="186" width="16" height="18" rx="2"/>
-          <rect x="343" y="156" width="16" height="18" rx="2"/><rect x="291" y="306" width="16" height="18" rx="2"/>
-          <rect x="317" y="396" width="16" height="18" rx="2"/><rect x="187" y="276" width="16" height="18" rx="2"/>
-          <rect x="421" y="336" width="16" height="18" rx="2"/>
-        </g>
-        <g fill="#bfe6ff" fill-opacity=".6">
-          <rect x="213" y="336" width="16" height="18" rx="2"/><rect x="161" y="396" width="16" height="18" rx="2"/>
-          <rect x="395" y="306" width="16" height="18" rx="2"/><rect x="447" y="426" width="16" height="18" rx="2"/>
-          <rect x="265" y="246" width="16" height="18" rx="2"/><rect x="343" y="336" width="16" height="18" rx="2"/>
-        </g>
-      </svg>
+      <img class="bimg" src="building.webp" alt="Luxury apartment building at dusk" loading="eager">
+
     </div>
   </div>
   <div class="scrollcue" id="scrollcue"></div>

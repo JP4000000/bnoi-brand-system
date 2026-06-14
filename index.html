@@ -691,6 +691,8 @@ if(window.gsap&&window.ScrollTrigger&&!reduce){
   gsap.set('.hero h1 .line span',{yPercent:115});
   gsap.to('.hero h1 .line span',{yPercent:0,duration:1.1,ease:'power4.out',stagger:.12,delay:.15});
   gsap.from('.hero .pill,.hero .lede,.hero .stats,.herobuild',{y:24,opacity:0,duration:1,ease:'power3.out',stagger:.1,delay:.5});
+  // safety net: if animation frames are paused (e.g. page opened in a background tab), never leave the hero hidden
+  setTimeout(function(){document.querySelectorAll('.hero .pill,.hero .lede,.hero .stats,.herobuild').forEach(function(e){e.style.opacity='1';e.style.transform='none';});document.querySelectorAll('.hero h1 .line span').forEach(function(e){e.style.transform='none';});document.querySelectorAll('.hero .stat .n').forEach(function(e){if(e.textContent==='0')e.textContent=e.dataset.count;});},2600);
   // counters
   document.querySelectorAll('.hero .stat .n').forEach(el=>{const end=+el.dataset.count;const o={v:0};
     gsap.to(o,{v:end,duration:1.4,ease:'power2.out',delay:.7,onUpdate:()=>el.textContent=Math.round(o.v)});});

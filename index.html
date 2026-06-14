@@ -120,22 +120,37 @@ section.block{padding:clamp(70px,12vh,150px) 0;border-bottom:1px solid var(--lin
 .ghead .sp{flex:1}
 .divlabel{display:flex;align-items:center;gap:16px;margin:clamp(30px,5vh,50px) 0 30px;color:var(--muted);font-weight:600;font-size:11.5px;letter-spacing:.2em}
 .divlabel::before,.divlabel::after{content:'';height:1px;background:var(--line);flex:1}
-.tablescroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -10px;padding:26px 10px 22px}
-.ctable{min-width:660px}
-.colhead,.crow{display:grid;grid-template-columns:160px repeat(11,1fr);gap:6px;align-items:center}
-.colhead{margin-bottom:10px}
-.colhead .ch{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+.ctable{padding:4px 0}
+.colhead{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;margin-bottom:12px}
 .colhead .chf{font-weight:600;font-size:11px;letter-spacing:.12em;color:var(--muted)}
-.crow{margin-bottom:6px}
-.fname{display:flex;align-items:center;gap:7px;font-weight:600;font-size:14.5px;padding-right:8px;min-height:34px}
+.colhead .chnums{display:grid;grid-template-columns:repeat(11,1fr);gap:6px}
+.colhead .chnums span{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+.crow{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;margin-bottom:8px}
+.fname{display:flex;align-items:center;gap:7px;font-weight:600;font-size:14.5px;min-height:34px}
 .fname .editbtn{opacity:0;transition:opacity .15s}
 .crow:hover .fname .editbtn{opacity:1}
-.stop{height:60px;border-radius:7px;cursor:pointer;position:relative;transition:transform .14s var(--ease),box-shadow .14s}
+.rampwrap{min-width:0}
+.ramp{display:grid;grid-template-columns:repeat(11,1fr);gap:6px}
+.stoplabels{display:none}
+.stop{height:58px;border-radius:7px;cursor:pointer;position:relative;transition:transform .14s var(--ease),box-shadow .14s}
 .stop:hover{transform:scale(1.1);z-index:5;box-shadow:0 10px 24px rgba(0,0,0,.22)}
 .stop .hx{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-family:var(--mono);font-size:11px;padding:4px 7px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .12s;white-space:nowrap;z-index:6}
 .stop:hover .hx{opacity:1}
 .stop.empty{cursor:default;background:repeating-linear-gradient(45deg,#fafafa,#fafafa 6px,#f0f0f0 6px,#f0f0f0 12px);border:1px solid var(--line)}
 .stop.empty:hover{transform:none;box-shadow:none}
+/* mobile: each family becomes a card with a full-width continuous ramp strip + stop labels below */
+@media(max-width:720px){
+  .colhead{display:none}
+  .crow{display:block;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .fname{margin-bottom:11px;min-height:0}
+  .fname .editbtn{opacity:1}
+  .ramp{gap:0;border-radius:9px;overflow:hidden}
+  .ramp .stop{height:46px;border-radius:0}
+  .ramp .stop:hover{transform:none;box-shadow:none;z-index:auto}
+  .ramp .stop .hx{display:none}
+  .stoplabels{display:grid;grid-template-columns:repeat(11,1fr);margin-top:8px}
+  .stoplabels span{font-family:var(--mono);font-size:9.5px;color:var(--muted);text-align:center}
+}
 
 /* modal */
 .scrim{position:fixed;inset:0;z-index:80;background:rgba(18,20,32,.5);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
@@ -211,10 +226,20 @@ footer a{color:rgba(255,255,255,.7);font-size:14px;margin-right:22px}footer a:ho
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast .chip{width:16px;height:16px;border-radius:4px;border:1px solid rgba(255,255,255,.3)}
 
+@media(max-width:900px){
+  #principles{grid-template-columns:1fr 1fr!important}
+}
 @media(max-width:780px){
   .contents .grid,.pairing,.typerow{grid-template-columns:1fr}
   .typerow{gap:10px}
   .hero .toprow span:nth-child(2){display:none}
+  .ghead .count{display:none}
+  .ghead .addlong{display:none}
+  .hero .stats{gap:16px;flex-wrap:nowrap}
+  .hero .stat{flex:1;min-width:0}
+}
+@media(max-width:520px){
+  #principles{grid-template-columns:1fr!important}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -442,15 +467,17 @@ function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e)
 const $=s=>document.querySelector(s);
 
 /* ===================== RENDER ===================== */
-function colHead(){return '<div class="colhead"><div class="chf">FAMILY</div>'+STOPS.map(s=>'<div class="ch">'+s+'</div>').join('')+'</div>';}
+function colHead(){return '<div class="colhead"><div class="chf">FAMILY</div><div class="chnums">'+STOPS.map(s=>'<span>'+s+'</span>').join('')+'</div></div>';}
 function stopHTML(hex){return '<div class="stop" style="background:'+hex+'" data-hex="'+hex+'"><span class="hx">'+hex+'</span></div>';}
-function brandRow(c,group,i){const valid=isHex(c.hex);let cells;
-  if(valid){const{ramp}=rampFor(c);cells=STOPS.map(s=>stopHTML(ramp[s])).join('');}
-  else{cells=STOPS.map(()=>'<div class="stop empty"></div>').join('');}
+function stopLabels(){return '<div class="stoplabels">'+STOPS.map(s=>'<span>'+s+'</span>').join('')+'</div>';}
+function rampWrap(strip){return '<div class="rampwrap"><div class="ramp">'+strip+'</div>'+stopLabels()+'</div>';}
+function brandRow(c,group,i){const valid=isHex(c.hex);
+  let strip;if(valid){const{ramp}=rampFor(c);strip=STOPS.map(s=>stopHTML(ramp[s])).join('');}
+  else{strip=STOPS.map(()=>'<div class="stop empty"></div>').join('');}
   const edit=state.locked?'':'<button class="iconbtn editbtn" data-edit="'+group+':'+i+'" title="Fine-tune hue & chroma">'+ic('sliders',15)+'</button>';
-  return '<div class="crow"><div class="fname">'+(c.name||'untitled')+edit+'</div>'+cells+'</div>';}
-function sysRow(c){return '<div class="crow"><div class="fname">'+c.name+'</div>'+STOPS.map(s=>stopHTML(TW[c.fam][s])).join('')+'</div>';}
-function sysRowPlain(f){return '<div class="crow"><div class="fname" style="text-transform:capitalize;color:var(--muted);font-weight:500">'+f+'</div>'+STOPS.map(s=>stopHTML(TW[f][s])).join('')+'</div>';}
+  return '<div class="crow"><div class="fname">'+(c.name||'untitled')+edit+'</div>'+rampWrap(strip)+'</div>';}
+function sysRow(c){return '<div class="crow"><div class="fname">'+c.name+'</div>'+rampWrap(STOPS.map(s=>stopHTML(TW[c.fam][s])).join(''))+'</div>';}
+function sysRowPlain(f){return '<div class="crow"><div class="fname" style="text-transform:capitalize;color:var(--muted);font-weight:500">'+f+'</div>'+rampWrap(STOPS.map(s=>stopHTML(TW[f][s])).join(''))+'</div>';}
 function swatchCount(rows,isSys){let n=0;rows.forEach(r=>{if(isSys||isHex(r.hex))n+=11;});return n;}
 function groupHTML(group){const isSys=group==='system';const rows=state[group];
   const titles={primary:['Brand · Primary','Identity & interactive — max 4'],secondary:['Brand · Secondary','Accents & support — max 4'],system:['System Colors','Functional Tailwind v4 families — fixed']};
@@ -458,11 +485,11 @@ function groupHTML(group){const isSys=group==='system';const rows=state[group];
   let head='<div class="ghead '+(isSys?'sys':'')+'"><div class="accent"></div><div><h3>'+t+'</h3><div class="gsub">'+sub+'</div></div>'
     +'<div class="count">'+rows.length+' families · '+swatchCount(rows,isSys)+' swatches</div><div class="sp"></div>';
   if(isSys){head+='<button class="btn" id="sysToggle">'+(sysAll?ic('chevUp',16)+' Hide all':ic('chevDown',16)+' Show all 22')+'</button>';}
-  head+='<button class="btn" data-add="'+group+'"'+(addDisabled?' disabled':'')+'>'+ic('plus',16)+' Add color family</button></div>';
-  let body='<div class="tablescroll"><div class="ctable">'+colHead();
+  head+='<button class="btn" data-add="'+group+'"'+(addDisabled?' disabled':'')+'>'+ic('plus',16)+' Add<span class="addlong"> color family</span></button></div>';
+  let body='<div class="ctable">'+colHead();
   if(isSys){body+=rows.map(sysRow).join('');if(sysAll){body+=TW_NAMES.map(sysRowPlain).join('');}}
   else{body+=rows.map((c,i)=>brandRow(c,group,i)).join('');}
-  body+='</div></div>';return head+body;}
+  body+='</div>';return head+body;}
 function render(){
   $('#g-primary').innerHTML=groupHTML('primary');
   $('#g-secondary').innerHTML=groupHTML('secondary');

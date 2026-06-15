@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" data-skin="bnoi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BNOI — White-label flip (BNOI ↔ Avondale)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKEN CONTRACT (the white-label mechanism) ============ */
+:root{
+  --bg:#F6F7FA; --surface:#FFFFFF; --foreground:#1C2046; --muted:#F3F4F6; --muted-foreground:#6A7282; --border:#E5E7EB;
+  --primary:#272B64; --primary-foreground:#FFFFFF; --primary-hover:#1F2350;
+  --ring:#2D62AA;                 /* CONSTANT focus ring — same on every brand */
+  --accent:#F3F4F6;              /* subtle hover bg (shadcn convention, gray) */
+  --brand-accent:#51B3C0; --highlight:#E5EDB0; --highlight-foreground:#3A3F12;
+  --radius:10px; --font-head:'Montserrat',sans-serif; --font-ui:'Inter',sans-serif;
+  /* Sammy — LOCKED BetterNOI identity (never swaps) */
+  --sammy-primary:#2D62AA; --sammy-accent:#51B3C0; --sammy-surface:#272B64; --sammy-on:#FFFFFF;
+  /* System — fixed Tailwind */
+  --warning:#F69E00; --destructive:#E40016; --success:#00A447;
+}
+[data-skin="avondale"]{
+  --foreground:#404040; --muted:#F5F5F4; --muted-foreground:#79716B; --border:#E7E5E4;
+  --primary:#324158; --primary-foreground:#FFFFFF; --primary-hover:#2C3747;
+  /* --ring stays #2D62AA (constant) · Sammy + system unchanged */
+  --brand-accent:#DCC397; --highlight:#FFD617; --highlight-foreground:#413500;
+  --radius:4px; --font-head:'Playfair Display',serif;
+}
+/* ============ components — semantic tokens only ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--foreground);-webkit-font-smoothing:antialiased}
+.app{max-width:1080px;margin:0 auto;padding:0 20px 60px}
+.topbar{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--border)}
+.logo{font-family:var(--font-head);font-weight:800;font-size:20px;letter-spacing:-.01em;color:var(--primary)}
+.search{flex:1;max-width:440px;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:9px 16px}
+.search .dot{width:9px;height:9px;border-radius:50%;background:var(--sammy-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--sammy-primary) 25%,transparent)}
+.search input{border:none;outline:none;flex:1;font-family:var(--font-ui);font-size:14px;color:var(--foreground);background:transparent}
+.search .tag{font-size:11px;font-weight:600;color:var(--sammy-primary)}
+.toggle{display:flex;gap:4px;background:var(--muted);border-radius:999px;padding:4px}
+.toggle button{font-family:var(--font-ui);font-weight:600;font-size:13px;border:none;background:transparent;color:var(--muted-foreground);padding:7px 14px;border-radius:999px;cursor:pointer}
+.toggle button.on{background:var(--surface);color:var(--foreground);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.h1{font-family:var(--font-head);font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:34px 0 6px;color:var(--foreground)}
+.sub{color:var(--muted-foreground);font-size:15px;margin-bottom:26px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat .n{font-family:var(--font-head);font-weight:800;font-size:28px;color:var(--primary)}
+.stat .l{font-size:12.5px;color:var(--muted-foreground);margin-top:3px}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+.card h3{font-family:var(--font-head);font-weight:700;font-size:18px;margin-bottom:6px}
+.card p{color:var(--muted-foreground);font-size:14px;margin-bottom:16px}
+label{display:block;font-size:12.5px;font-weight:600;margin:0 0 6px}
+.input{width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;font-family:var(--font-ui);font-size:14px;outline:none;background:var(--surface);color:var(--foreground)}
+.input:focus{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 28%,transparent)}
+.btns{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--font-ui);font-weight:600;font-size:14px;border-radius:var(--radius);padding:11px 18px;cursor:pointer;border:1px solid transparent}
+.btn-primary{background:var(--primary);color:var(--primary-foreground)}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--foreground)}
+.btn-outline:hover{background:var(--accent)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 40%,transparent)}
+.badge{display:inline-flex;align-items:center;font-size:12px;font-weight:600;background:var(--highlight);color:var(--highlight-foreground);padding:4px 11px;border-radius:999px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#fff;background:var(--brand-accent);padding:6px 12px;border-radius:999px}
+.lead{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.lead:last-child{border-bottom:none}
+.lead .nm{font-weight:600;font-size:14px}
+.lead .meta{font-size:12.5px;color:var(--muted-foreground)}
+.pill-status{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px}
+.s-new{background:color-mix(in srgb,var(--success) 16%,transparent);color:var(--success)}
+.s-tour{background:color-mix(in srgb,var(--warning) 18%,transparent);color:#8a5a00}
+.note{max-width:1080px;margin:18px auto 0;padding:0 20px;font-size:13px;color:var(--muted-foreground)}
+.swapline{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.swapline span{font-family:ui-monospace,monospace;font-size:11px;background:var(--muted);border:1px solid var(--border);border-radius:6px;padding:3px 8px}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo" id="logo">BetterNOI</div>
+    <div class="search"><span class="dot"></span><input placeholder="Ask Sammy or search leads, units, tasks…"><span class="tag">⌘K</span></div>
+    <div class="toggle">
+      <button id="b-bnoi" class="on" onclick="setSkin('bnoi')">BetterNOI</button>
+      <button id="b-avon" onclick="setSkin('avondale')">Avondale</button>
+    </div>
+  </div>
+
+  <h1>Leasing Dashboard</h1>
+  <div class="sub">Renter sales cycle · <span id="skinlabel">BetterNOI</span> skin</div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">128</div><div class="l">Active leads</div></div>
+    <div class="stat"><div class="n">34</div><div class="l">Tours this week</div></div>
+    <div class="stat"><div class="n">12</div><div class="l">Applications</div></div>
+    <div class="stat"><div class="n">94%</div><div class="l">Occupancy</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>New inquiry</h3>
+      <p>Capture a lead — components below all read semantic tokens, so they reskin with the brand.</p>
+      <label>Full name</label>
+      <input class="input" placeholder="Jordan Rivera">
+      <div class="btns">
+        <button class="btn btn-primary">Add lead</button>
+        <button class="btn btn-outline">Schedule tour</button>
+        <span class="badge">Hot lead</span>
+        <span class="chip">● Sammy match</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Recent leads</h3>
+      <div class="lead"><div><div class="nm">Maya Chen</div><div class="meta">2BR · Unit 412</div></div><span class="pill-status s-new">New</span></div>
+      <div class="lead"><div><div class="nm">Devon Brooks</div><div class="meta">Studio · waitlist</div></div><span class="pill-status s-tour">Tour</span></div>
+      <div class="lead"><div><div class="nm">Priya Nair</div><div class="meta">1BR · Unit 207</div></div><span class="pill-status s-new">New</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <b>White-label proof.</b> One component set, two brands — flip the toggle. Only the brand layer swaps;
+  Sammy (the search bar) and the focus ring stay BetterNOI-blue on both.
+  <div class="swapline">
+    <span>swaps: primary</span><span>accent</span><span>highlight</span><span>neutral</span><span>radius</span><span>heading font</span><span>logo</span>
+    <span>locked: ring #2D62AA</span><span>locked: Sammy</span><span>locked: system colors</span>
+  </div>
+</div>
+
+<script>
+function setSkin(s){
+  document.documentElement.dataset.skin=s;
+  document.getElementById('b-bnoi').classList.toggle('on',s==='bnoi');
+  document.getElementById('b-avon').classList.toggle('on',s==='avondale');
+  document.getElementById('logo').textContent = s==='avondale' ? 'Avondale Village' : 'BetterNOI';
+  document.getElementById('skinlabel').textContent = s==='avondale' ? 'Avondale Village' : 'BetterNOI';
+}
+</script>
+</body>
+</html>

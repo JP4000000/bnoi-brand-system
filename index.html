@@ -417,6 +417,13 @@ const C_PALE={50:.22,100:.38,200:.58,300:.86,400:.96,500:.97,600:.95,700:.90,800
 function maxChroma(L,H){let lo=0,hi=0.5;for(let i=0;i<24;i++){const m=(lo+hi)/2;const[r,g,b]=rawRgb(L,m,H);const e=1e-4;(r>=-e&&r<=1+e&&g>=-e&&g<=1+e&&b>=-e&&b<=1+e)?lo=m:hi=m;}return lo;}
 function isHex(h){h=(h||'').trim();return /^#?[0-9a-fA-F]{6}$/.test(h)||/^#?[0-9a-fA-F]{3}$/.test(h);}
 function norm(h){h=(h||'').trim();if(h&&!h.startsWith('#'))h='#'+h;return h.toUpperCase();}
+// Pinned brand ramps — exact approved values (OKLCH, brand hex pinned at anchor).
+// Keeps the site byte-identical to the Figma styles + code tokens for the 4 brand families.
+const PINNED={
+'#272B64':{50:'#F7F8FF',100:'#ECEFFE',200:'#DBE0FB',300:'#C3CCF4',400:'#9EA9E4',500:'#7C87CC',600:'#616BB3',700:'#4B5399',800:'#373D7E',900:'#272B64',950:'#13153F'},
+'#2D62AA':{50:'#F5F9FF',100:'#E7F1FF',200:'#D1E4FE',300:'#B3D0F9',400:'#86B0EA',500:'#5D8ED4',600:'#3D72BB',700:'#2D62AA',800:'#104385',900:'#03346F',950:'#001A3F'},
+'#51B3C0':{50:'#F2FAFB',100:'#E2F4F7',200:'#C7E9EE',300:'#A2D9E1',400:'#51B3C0',500:'#1E9EAD',600:'#0E818D',700:'#096771',800:'#024F57',900:'#003E45',950:'#002024'},
+'#E5EDB0':{50:'#F8FAE9',100:'#EFF5CF',200:'#E5EDB0',300:'#CDD85F',400:'#ADB819',500:'#8D9607',600:'#71790B',700:'#5A6106',800:'#454A01',900:'#363A00',950:'#1B1E00'}};
 function rampFor(item){const[baseL,baseC,baseH]=hexToOklch(item.hex);
   let nearest=STOPS[0],best=1e9;STOPS.forEach(s=>{const d=Math.abs(L_BASE[s]-baseL);if(d<best){best=d;nearest=s;}});
   // pale seed = a light, under-saturated color that can't anchor the family on its own → re-seed vivid, keep the exact hex pinned
@@ -424,6 +431,7 @@ function rampFor(item){const[baseL,baseC,baseH]=hexToOklch(item.hex);
   const pale=(nearest<=300&&seedSat<0.6);
   const H=(item.hue==null?baseH:item.hue);const cScale=(item.chroma==null?1:item.chroma);
   const unchanged=(item.hue==null||Math.abs(item.hue-baseH)<0.5)&&(item.chroma==null||Math.abs(item.chroma-1)<0.005);
+  if(unchanged&&PINNED[norm(item.hex)]){return{ramp:PINNED[norm(item.hex)],baseStop:nearest,pale:false};}
   const ramp={};STOPS.forEach(s=>{
     if(unchanged&&s===nearest){ramp[s]=norm(item.hex);return;}
     const C=pale?maxChroma(L_BASE[s],H)*C_PALE[s]*cScale:baseC*cScale*C_MULT[s];
